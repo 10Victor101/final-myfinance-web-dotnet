@@ -1,0 +1,106 @@
+﻿@model IEnumerable<final_my_finance.Models.PlanoDeContas>
+
+@{
+    ViewData["Title"] = "Receitas e Despesas";
+}
+
+<div class="container mt-5">
+    <h3>Receitas e Despesas</h3>
+
+    <div class="row gap-3">
+        <div class="col-md-4">
+            <label for="dataInicio" class="form-label">Data Início:</label>
+            <input type="date" id="dataInicio" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <label for="dataFim" class="form-label">Data Fim:</label>
+            <input type="date" id="dataFim" class="form-control">
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button class="btn btn-primary" onclick="gerarGrafico()">Gerar Gráfico</button>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <div class="mt-4" style="width: 400px">
+            <canvas id="graficoPizza" width="100" height="100"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    let myChart;
+
+    const dadosReceitasDespesas = [
+        { categoria: 'Receita', valor: 1200, data: '2024-11-01' },
+        { categoria: 'Despesa', valor: 800, data: '2024-11-02' },
+        { categoria: 'Receita', valor: 1500, data: '2024-11-03' },
+        { categoria: 'Despesa', valor: 900, data: '2024-11-04' },
+        { categoria: 'Receita', valor: 1100, data: '2024-11-05' },
+        { categoria: 'Despesa', valor: 700, data: '2024-11-06' }
+    ];
+
+    const gerarGrafico = () => {
+        const planoDeContas = @Html.Raw(Json.Serialize(Model));
+        console.log(planoDeContas)
+      /*  const dataInicio = document.getElementById('dataInicio').value;
+        const dataFim = document.getElementById('dataFim').value;
+
+        if (!dataInicio || !dataFim) {
+            alert('Por favor, selecione um período.');
+            return;
+        }
+
+        const dadosFiltrados = dadosReceitasDespesas.filter(item => {
+            return item.data >= dataInicio && item.data <= dataFim;
+        });*/
+
+        let totalReceitas = 0;
+        let totalDespesas = 0;
+
+        planoDeContas.forEach(item => {
+            if (item.tipo == 'R') {
+                totalReceitas += 20000;
+            } else if (item.tipo == 'D') {
+                totalDespesas += 1000;
+            }
+        });
+
+        const dadosGrafico = {
+            labels: ['Receitas', 'Despesas'],
+            datasets: [{
+                data: [totalReceitas, totalDespesas],
+                backgroundColor: ['#36A2EB', '#FF6384'],
+                hoverBackgroundColor: ['#63A2FF', '#FF84A1']
+            }]
+        };
+
+        if (myChart) {
+            myChart.destroy(); // Destrói o gráfico anterior
+        }
+
+        const ctx = document.getElementById('graficoPizza').getContext('2d');
+        myChart = new Chart(ctx, {
+            type: 'pie',
+            data: dadosGrafico,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                return tooltipItem.label + ': R$ ' + tooltipItem.raw;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
