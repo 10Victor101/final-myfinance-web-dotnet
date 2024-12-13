@@ -1,4 +1,4 @@
-﻿@model IEnumerable<final_my_finance.Models.PlanoDeContas>
+﻿@model IEnumerable<final_my_finance.Models.PlanoConta>
 
 @{
     ViewData["Title"] = "Plano de Contas";
@@ -17,7 +17,7 @@
         <thead>
             <tr>
                 <th>Código</th>
-                <th>Descrição</th>
+                <th>Nome</th>
                 <th>Tipo</th>
                 <th>Ações</th>
             </tr>
@@ -26,11 +26,11 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@item.Codigo</td>
-                    <td>@item.Descricao</td>
+                    <td>@item.Id</td>
+                    <td>@item.Nome</td>
                     <td>@item.Tipo</td>
                     <td>
-                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCriarPlano" onclick="editarPlano(@item.Id, '@item.Codigo', '@item.Descricao', '@item.Tipo')">
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCriarPlano" onclick="editarPlano(@item.Id, '@item.Nome', '@item.Tipo')">
                             <i class="bi bi-pencil"></i> Editar
                         </button>
                         <button class="btn btn-danger btn-sm" onclick="excluirPlano(@item.Id)">
@@ -54,11 +54,11 @@
                 <form id="formCriarPlano">
                     <div class="mb-3">
                         <label for="codigo" class="form-label">Código</label>
-                        <input type="text" class="form-control" id="codigo" required>
+                        <input type="text" class="form-control" id="codigo" disabled>
                     </div>
                     <div class="mb-3">
-                        <label for="descricao" class="form-label">Descrição</label>
-                        <input type="text" class="form-control" id="descricao" required>
+                        <label for="nome" class="form-label">Nome</label>
+                        <input type="text" class="form-control" id="nome" required>
                     </div>
                     <div class="mb-3">
                         <label for="tipo" class="form-label">Tipo</label>
@@ -70,7 +70,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary " data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-secondary " data-bs-dismiss="modal" onclick="clearModal()">Cancelar</button>
                 <button type="button" class="btn btn-success" onclick="salvarPlano()">Salvar</button>
             </div>
         </div>
@@ -80,24 +80,27 @@
 <script>
     let planoId;
 
-    const editarPlano = (id, codigo, descricao, tipo) => {
-        document.getElementById("codigo").value = codigo;
-        document.getElementById("descricao").value = descricao;
+    const clearModal = () => {
+        location.reload();
+    }
+
+    const editarPlano = (id, nome, tipo) => {
+        document.getElementById("codigo").value = id;
+        document.getElementById("nome").value = nome;
         document.getElementById("tipo").value = tipo;
 
         planoId = id;
     }
 
     const salvarPlano = () => {
-        const codigo = document.getElementById("codigo").value;
-        const descricao = document.getElementById("descricao").value;
+        const nome = document.getElementById("nome").value;
         const tipo = document.getElementById("tipo").value;
 
         const plano = {
             Id: planoId,
-            Codigo: codigo,
-            Descricao: descricao,
-            Tipo: tipo
+            Nome: nome,
+            Tipo: tipo,
+            Teste: 'teste123'
         };
 
         $.ajax({

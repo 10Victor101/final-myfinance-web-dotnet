@@ -1,0 +1,183 @@
+﻿@model IEnumerable<final_my_finance.Models.Transacao>
+
+@{
+    var transacoes = ViewBag.Transacoes as List<Transacao>;
+    var planosContas = ViewBag.PlanosContas as List<PlanoConta>;
+    ViewData["Title"] = "Transações";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between">
+        <h3>Transações</h3>
+        <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#modalCriarTransacao">
+            <i class="bi bi-plus-circle"></i> Criar Transação
+        </button>
+    </div>
+
+    <!-- Tabela de Transações -->
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Data</th>
+                <th>Valor</th>
+                <th>Histórico</th>
+                <th>Plano Conta</th>
+                <th>Tipo</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="listaTransacoes">
+            @foreach (var item in transacoes)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Data</td>
+                    <td>@item.Valor</td>
+                    <td>@item.Historico</td>
+                    <td>@item.PlanoConta?.Nome</td>
+                    <td>@item.PlanoConta?.Tipo</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCriarTransacao" onclick="editarTransacao(@item.Id, '@item.Data', '@item.Valor', '@item.Historico', @item.PlanoContaId,)">
+                            <i class="bi bi-pencil"></i> Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="excluirTransacao(@item.Id)">
+                            <i class="bi bi-trash"></i> Excluir
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="modalCriarTransacao" tabindex="-1" aria-labelledby="modalCriarTransacaoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCriarTransacaoLabel">Criar/Editar Transação</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formCriarTransacao">
+                    <div class="mb-3">
+                        <label for="codigo" class="form-label">Código</label>
+                        <input type="text" class="form-control" id="codigo" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="data" class="form-label">Data</label>
+                        <input type="datetime-local" class="form-control" id="data" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="valor" class="form-label">Valor</label>
+                        <input class="form-control" id="valor" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="historico" class="form-label">Histórico</label>
+                        <input type="text" class="form-control" id="historico" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="planoContaId" class="form-label">Plano de Conta</label>
+                        <select class="form-control" id="planoContaId" required>
+                            @foreach (var plano in planosContas)
+                            {
+                                <option value="@plano.Id">@plano.Id - @plano.Nome</option>
+                            }
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearModal()">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="salvarTransacao()">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let transacaoId;
+
+    const clearModal = () => {
+        location.reload();
+    }
+
+    const editarTransacao = (id, data, valor, historico, planoContaId, tipo) => {
+        document.getElementById("codigo").value = id;
+        document.getElementById("data").value = formatarData(data);
+        document.getElementById("valor").value = valor;
+        document.getElementById("historico").value = historico;
+        document.getElementById("planoContaId").value = planoContaId;
+
+        transacaoId = id;
+    }
+
+    const formatarData = (dataString) => {
+        const dataOriginal = dataString;
+
+        const [data, hora] = dataOriginal.split(" ");
+        const [dia, mes, ano] = data.split("/");
+
+        const dataFormatada = `${ano}-${mes}-${dia}T${hora.slice(0, 5)}`;
+
+        return dataFormatada;
+    }
+
+    const salvarTransacao = () => {
+        const data = document.getElementById("data").value;
+        const valor = document.getElementById("valor").value;
+        const historico = document.getElementById("historico").value;
+        const planoContaId = document.getElementById("planoContaId").value;
+
+        console.log(data)
+        const transacao = {
+            Id: transacaoId,
+            Data: data,
+            Valor: parseFloat(valor),
+            Historico: historico,
+            PlanoContaId: parseInt(planoContaId)
+        };
+
+        console.log(JSON.stringify(transacao));
+
+        $.ajax({
+            url: '@Url.Action("SalvarTransacao", "Transacao")',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(transacao), // Envia o objeto transacao como JSON
+            success: function (response) {
+                const modalElement = document.getElementById('modalCriarTransacao');
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                modal.hide();
+
+                alert(response.message);
+                location.reload();
+            },
+            error: function () {
+                alert("Ocorreu um erro ao salvar a transação.");
+            }
+        });
+    }
+
+
+    const excluirTransacao = (id) => {
+        if (confirm('Tem certeza que deseja excluir esta transação?')) {
+            $.ajax({
+                url: '@Url.Action("ExcluirTransacao", "Transacao")' + '?transacaoId=' + id,
+                type: 'DELETE',
+                contentType: 'application/json',
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert("Ocorreu um erro ao excluir a transação.");
+                }
+            });
+        }
+    }
+</script>

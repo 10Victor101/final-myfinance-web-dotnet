@@ -1,6 +1,5 @@
 ﻿using final_my_finance.Data;
 using final_my_finance.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -19,30 +18,29 @@ namespace final_my_finance.Controllers
 
         public IActionResult PlanoDeContasList()
         {
-            var planoDeContas = _context.PlanoDeContas.ToList();
+            var planoDeContas = _context.PlanoConta.ToList();
             return View(planoDeContas);
         }  
         
         public IActionResult GraficoPlanoDeContas()
         {
-            var planoDeContas = _context.PlanoDeContas.ToList();
+            var planoDeContas = _context.PlanoConta.ToList();
             return View(planoDeContas);
         }
 
         [HttpPost]
-        public ActionResult SalvarPlano([FromBody] PlanoDeContas plano)
+        public ActionResult SalvarPlano([FromBody] PlanoConta plano)
         {
             try
             {
-                var planoExistente = _context.PlanoDeContas.Find(plano.Id);
+                var planoExistente = _context.PlanoConta.Find(plano.Id);
                 if (planoExistente == null)
                 {
-                    _context.PlanoDeContas.Add(plano);
+                    _context.PlanoConta.Add(plano);
                 }
                 else
                 {
-                    planoExistente.Codigo = plano.Codigo;
-                    planoExistente.Descricao = plano.Descricao;
+                    planoExistente.Nome = plano.Nome;
                     planoExistente.Tipo = plano.Tipo;
                 }
 
@@ -60,8 +58,8 @@ namespace final_my_finance.Controllers
         {
             try
             {
-                var plano = _context.PlanoDeContas.Find(planoId);
-                _context.PlanoDeContas.Remove(plano);
+                var plano = _context.PlanoConta.Find(planoId);
+                _context.PlanoConta.Remove(plano);
 
                 _context.SaveChanges();
 
@@ -72,36 +70,6 @@ namespace final_my_finance.Controllers
                 return Json(new { success = false, message = "Ocorreu um erro ao excluir o plano de contas." });
             }
         }
-
-
-        // POST: HomeController1/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // POST: HomeController1/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
