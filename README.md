@@ -1,3 +1,9 @@
+# Integrantes
+
+* Victor Antonio Rocha Damasceno
+* Luciano Lucero
+* Marcus Marques
+
 # O que foi feito?
 
 ### Tela inicial 
