@@ -4,6 +4,43 @@
 * Luciano Lucero
 * Marcus Marques
 
+## Arquitetura Utilizada
+
+A arquitetura do MyFinance Web foi desenhada com foco em modularidade e escalabilidade
+- **Padrão MVC (Model-View-Controller):** Estrutura organizada para separar responsabilidades e facilitar manutenção.
+- **Responsividade:** Design responsivo para suportar plataformas web em dispositivos como smartphones e tablets.
+- **Banco de Dados Relacional:** Utilização do SQL Server para persistência dos dados.
+
+## Tecnologias
+
+- **Back-End:** Microsoft ASP.NET MVC
+- **Banco de Dados:** SQL Server
+- **Front-End:** HTML, CSS, e JavaScript / Bootstrap
+
+## Funcionalidades
+
+1. **Plano de Contas:** Cadastro e categorização de receitas e despesas.
+2. **Registro de Transações:** Inclusão de transações financeiras associadas ao plano de contas.
+
+## Como configurar o projeto
+
+1. **Pré-requisitos:**
+   - Visual Studio
+   - SQL Server
+   - .NET 8
+
+2. **Clone o Repositório:**
+   ```bash
+   git clone https://github.com/seu-usuario/MyFinanceWeb.git
+   cd MyFinanceWeb
+
+3. **Configuração do Banco de Dados:**
+   - Crie um banco de dados no SQL Server conforme o script do repositório.
+   - Atualize a string de conexão no arquivo appsettings.json.
+
+5. **Executando o projeto**
+   - Abra o projeto no visual studio e realize a compilação.
+
 # O que foi feito?
 
 ### Tela inicial 
